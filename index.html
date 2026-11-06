@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101a2c">
+<title>TruthLens — Media authenticity</title>
+<style>
+:root{--navy:#101a2c;--ink:#172033;--muted:#657087;--line:#e4e8ef;--paper:#f6f8fc;--blue:#5c79f6;--mint:#c8f4df;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:var(--navy);color:white;padding:18px 22px}.nav{max-width:1000px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:20px;letter-spacing:-.4px}.logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(145deg,#9db0ff,#5c79f6);display:grid;place-items:center;color:#101a2c;font-weight:900}.tag{font-size:12px;color:#d5def3;border:1px solid #43506a;border-radius:999px;padding:7px 10px}
+main{max-width:1000px;margin:0 auto;padding:38px 20px 52px}.hero{text-align:center;max-width:700px;margin:0 auto 28px}.eyebrow{font-size:12px;letter-spacing:1.7px;font-weight:800;color:#536bd8;text-transform:uppercase}.hero h1{font-size:clamp(32px,5vw,48px);letter-spacing:-1.7px;line-height:1.08;margin:12px 0}.hero p{color:var(--muted);font-size:16px;line-height:1.65;margin:0 auto;max-width:610px}
+.layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(260px,.9fr);gap:18px;align-items:start}.panel{background:var(--white);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 12px 32px #17203308}.panel h2{font-size:18px;margin:0 0 7px}.sub{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 18px}
+.drop{border:1.5px dashed #aab6d0;border-radius:17px;padding:26px 16px;text-align:center;background:#fbfcff;cursor:pointer;transition:.15s}.drop.drag{border-color:var(--blue);background:#f1f4ff}.uploadicon{font-size:30px;margin-bottom:7px}.drop strong{display:block;font-size:15px}.drop small{display:block;color:var(--muted);margin-top:7px;line-height:1.5}.drop input{display:none}
+.preview{display:none;margin-top:15px}.preview img,.preview video{display:block;width:100%;max-height:310px;object-fit:contain;background:#eef1f6;border-radius:13px}.fileinfo{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;margin-top:8px;overflow-wrap:anywhere}
+.btn{border:0;border-radius:12px;background:var(--navy);color:white;font-weight:700;padding:13px 16px;font-size:14px;cursor:pointer;width:100%;margin-top:16px}.btn:disabled{opacity:.42;cursor:not-allowed}.note{font-size:12px;color:var(--muted);line-height:1.55;margin:12px 0 0}
+.resulttop{display:flex;align-items:center;gap:12px;margin-bottom:14px}.resulticon{height:42px;width:42px;display:grid;place-items:center;border-radius:13px;background:#eef1ff;font-size:21px}.resulttop h2{margin:0}.pill{display:inline-block;background:#fff3d8;color:#77550a;border-radius:999px;font-size:11px;font-weight:800;padding:6px 9px;margin:7px 0 12px}.resultbox{border:1px solid #f0dca8;background:#fffbef;border-radius:15px;padding:14px;font-size:13px;line-height:1.6;color:#55451f}.checks{list-style:none;padding:0;margin:15px 0 0}.checks li{display:flex;gap:9px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;line-height:1.45}.checks li:last-child{border-bottom:0}.check{font-weight:900;color:#536bd8}.how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.how article{background:white;border:1px solid var(--line);border-radius:16px;padding:16px}.how b{font-size:13px;display:block;margin:8px 0 5px}.how p{font-size:12px;line-height:1.5;color:var(--muted);margin:0}.num{display:grid;place-items:center;background:#edf0ff;color:#4059d5;width:28px;height:28px;border-radius:9px;font-weight:800;font-size:12px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 20px 30px}
+@media(max-width:720px){main{padding-top:28px}.layout{grid-template-columns:1fr}.how{grid-template-columns:1fr}.panel{padding:18px}.tag{display:none}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="brand"><span class="logo">T</span> TruthLens</div><span class="tag">EARLY PROTOTYPE</span></div></header>
+<main>
+<section class="hero"><div class="eyebrow">Look closer. Check the evidence.</div><h1>Can you trust what you see?</h1><p>Upload an image or video to begin an authenticity review. TruthLens is being developed to help people understand AI-generated media, manipulation and possible scam signals.</p></section>
+<div class="layout">
+<section class="panel">
+<h2>Check a media file</h2><p class="sub">Choose a photo or video from your device. This prototype previews the file locally in your browser.</p>
+<label class="drop" id="drop" for="file"><div class="uploadicon">＋</div><strong>Choose an image or video</strong><small>Tap to browse or drag a file here<br>JPG, PNG, WEBP, MP4, MOV (depending on browser)</small><input id="file" type="file" accept="image/*,video/*"></label>
+<div class="preview" id="preview"><div id="media"></div><div class="fileinfo"><span id="filename"></span><span id="filesize"></span></div></div>
+<button class="btn" id="check" disabled>Review file</button>
+<p class="note">Privacy note: this demo does not upload your selected file to a server. Do not use sensitive or private media in an unfinished prototype.</p>
+</section>
+<aside class="panel">
+<div class="resulttop"><div class="resulticon">🛡️</div><div><h2>Review summary</h2><p class="sub" style="margin:3px 0 0">Your result will appear here</p></div></div>
+<span class="pill" id="status">DEMO — NO DETECTOR CONNECTED</span>
+<div class="resultbox" id="summary">This version cannot determine whether a file is AI-generated or authentic. It only demonstrates the user interface; a real detection and provenance system still needs to be connected.</div>
+<ul class="checks">
+<li><span class="check">○</span><span><b>AI-generation analysis</b><br>Not connected yet</span></li>
+<li><span class="check">○</span><span><b>Content Credentials / provenance</b><br>Not checked in this prototype</span></li>
+<li><span class="check">○</span><span><b>Scam-context review</b><br>Requires context, not just a picture</span></li>
+</ul>
+</aside>
+</div>
+<section class="how">
+<article><span class="num">1</span><b>Upload carefully</b><p>Only choose media you have permission to analyse. A preview is not an authenticity verdict.</p></article>
+<article><span class="num">2</span><b>Check evidence</b><p>The planned product will combine detection signals with provenance checks where available.</p></article>
+<article><span class="num">3</span><b>Use good judgement</b><p>No single detector can prove that a person is lying or that a file is real.</p></article>
+</section>
+</main>
+<footer>TruthLens is a working name. This prototype is for product design and testing, not forensic verification.</footer>
+<script>
+const input=document.getElementById('file'),drop=document.getElementById('drop'),preview=document.getElementById('preview'),media=document.getElementById('media'),filename=document.getElementById('filename'),filesize=document.getElementById('filesize'),button=document.getElementById('check'),status=document.getElementById('status'),summary=document.getElementById('summary');
+let objectUrl=null;
+function choose(file){if(!file)return;if(!file.type.startsWith('image/')&&!file.type.startsWith('video/')){summary.textContent='This file type is not supported by the demo preview. Choose an image or video.';return}
+if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=URL.createObjectURL(file);media.innerHTML='';
+const el=document.createElement(file.type.startsWith('image/')?'img':'video');el.src=objectUrl;if(el.tagName==='VIDEO'){el.controls=true;el.playsInline=true}else el.alt='Selected image preview';media.appendChild(el);
+filename.textContent=file.name;filesize.textContent=(file.size/1024/1024).toFixed(2)+' MB';preview.style.display='block';button.disabled=false;status.textContent='FILE SELECTED — NOT VERIFIED';summary.textContent='File selected successfully. No authenticity analysis has been performed. Use “Review file” to see the prototype limitations.'}
+input.addEventListener('change',()=>choose(input.files[0]));
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));
+drop.addEventListener('drop',e=>choose(e.dataTransfer.files[0]));
+button.addEventListener('click',()=>{status.textContent='NO VERDICT AVAILABLE';summary.textContent='TruthLens is not connected to an AI detector or a content-credentials verifier yet. File type, filename, file size and preview alone cannot prove whether media is real, AI-generated or manipulated. Next development step: integrate a provenance verifier and test an AI-detection model against known examples.'});
+</script>
+</body>
+</html>
