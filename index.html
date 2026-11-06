@@ -2,135 +2,328 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101827">
   <title>TruthLens | Media Inspector</title>
+
   <style>
     * { box-sizing: border-box; }
+
     body {
-      margin: 0; padding: 24px 16px;
+      margin: 0;
+      padding: 20px 14px;
+      background: #101827;
+      color: #f1f5f9;
       font-family: Arial, sans-serif;
-      background: #101827; color: #f8fafc;
+      line-height: 1.6;
     }
-    main { max-width: 600px; margin: auto; }
-    header { text-align: center; margin: 20px 0 30px; }
+
+    main { max-width: 650px; margin: auto; }
+
+    header { text-align: center; padding: 18px 0; }
+
     .logo { font-size: 42px; }
-    h1 { margin-bottom: 8px; }
+
+    h1 { margin: 0; font-size: 32px; }
+
     .accent { color: #60a5fa; }
-    p { color: #cbd5e1; line-height: 1.6; }
+
+    .muted { color: #cbd5e1; }
+
     .panel {
-      background: #1e293b; padding: 20px;
-      border-radius: 16px; margin: 18px 0;
+      background: #1e293b;
       border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 18px;
+      margin: 18px 0;
     }
+
     .upload {
-      display: block; padding: 24px 12px;
-      border: 2px dashed #64748b; border-radius: 12px;
-      text-align: center; cursor: pointer;
+      display: block;
+      padding: 20px 12px;
+      border: 2px dashed #64748b;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
     }
-    input { max-width: 100%; margin-top: 16px; }
+
+    input, select, textarea {
+      width: 100%;
+      margin-top: 7px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #64748b;
+      background: #0f172a;
+      color: #f8fafc;
+      font: inherit;
+    }
+
+    input[type="file"] {
+      background: transparent;
+      border: 0;
+      padding: 8px 0 0;
+    }
+
+    input[type="radio"] {
+      width: auto;
+      margin-right: 8px;
+    }
+
+    .choice {
+      display: block;
+      padding: 11px;
+      margin: 8px 0;
+      border: 1px solid #475569;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .choice input { display: inline-block; }
+
     button {
-      width: 100%; padding: 14px; border: 0;
-      border-radius: 10px; background: #3b82f6;
-      color: white; font-size: 16px; font-weight: bold;
-      margin-top: 14px; cursor: pointer;
+      width: 100%;
+      padding: 13px;
+      margin-top: 12px;
+      border: 0;
+      border-radius: 9px;
+      background: #3b82f6;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
     }
-    #preview { width: 100%; max-height: 420px;
-      object-fit: contain; margin-top: 18px;
-      border-radius: 10px; background: #0f172a; }
-    #preview[hidden] { display: none; }
-    #details { overflow-wrap: anywhere; }
-    .status { font-weight: bold; color: #fbbf24; }
-    footer { text-align: center; font-size: 12px; margin: 28px 0; }
+
+    button.secondary { background: #334155; }
+
+    #preview, #video {
+      width: 100%;
+      max-height: 380px;
+      object-fit: contain;
+      background: #0f172a;
+      border-radius: 10px;
+      margin-top: 16px;
+    }
+
+    [hidden] { display: none !important; }
+
+    .result {
+      padding: 14px;
+      border-radius: 10px;
+      background: #0f172a;
+      border: 1px solid #475569;
+      overflow-wrap: anywhere;
+    }
+
+    .status { color: #fbbf24; font-weight: bold; }
+
+    .field { margin: 18px 0; }
+
+    .field > label, .question-title {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .note { font-size: 13px; color: #cbd5e1; }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #cbd5e1;
+      padding: 18px 0;
+    }
   </style>
 </head>
+
 <body>
 <main>
   <header>
     <div class="logo">🔍</div>
     <h1>Truth<span class="accent">Lens</span></h1>
-    <p>Your first step toward understanding digital media.</p>
+    <p class="muted">Look closer. Check the context. Think critically.</p>
   </header>
 
   <section class="panel">
-    <h2>Media Inspector</h2>
-    <p>Select an image or video to preview and inspect its file details.</p>
+    <h2>1. Media Inspector</h2>
+    <p class="muted">
+      Select an image or video to preview it and inspect basic file details.
+    </p>
+
     <label class="upload" for="media">
       <strong>＋ Choose an image or video</strong>
-      <br><small>Tap here to select a file from your phone</small>
+      <br>
+      <small>Choose a file from your phone</small>
       <input id="media" type="file" accept="image/*,video/*">
     </label>
 
     <img id="preview" alt="Selected image preview" hidden>
-    <video id="video" controls playsinline
-      style="display:none;width:100%;max-height:420px;margin-top:18px">
-    </video>
+    <video id="video" controls playsinline hidden></video>
 
     <div id="details" aria-live="polite"></div>
   </section>
 
   <section class="panel">
-    <h3>Authenticity assessment</h3>
-    <p class="status" id="status">Undetermined</p>
-    <p id="explanation">
-      No media has been selected. A preview alone cannot establish
-      whether an image or video is authentic.
+    <h2>2. Source & Context Checker</h2>
+    <p class="muted">
+      Answer these questions using what you actually know. If you are unsure,
+      choose "I don't know." Your answers are not independently verified.
     </p>
+
+    <form id="checker">
+      <div class="field">
+        <label for="source">Where did you find this media?</label>
+        <select id="source" required>
+          <option value="">Choose an answer</option>
+          <option value="original">Original creator or original publication</option>
+          <option value="reputable">Established news or organisation website</option>
+          <option value="social">Social media repost</option>
+          <option value="forwarded">Forwarded message or unknown account</option>
+          <option value="unknown">I don't know</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="original">Can you locate the original source?</label>
+        <select id="original" required>
+          <option value="">Choose an answer</option>
+          <option value="yes">Yes, I found the original source</option>
+          <option value="partial">I found a possible source, not confirmed</option>
+          <option value="no">No, only copies or reposts</option>
+          <option value="unknown">I don't know</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="date">Can the claimed date and place be corroborated?</label>
+        <select id="date" required>
+          <option value="">Choose an answer</option>
+          <option value="both">Both date and place have supporting evidence</option>
+          <option value="one">Only one has supporting evidence</option>
+          <option value="none">Neither has been corroborated</option>
+          <option value="unknown">I don't know or the claim is unspecified</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="context">Does the accompanying caption match the evidence?</label>
+        <select id="context" required>
+          <option value="">Choose an answer</option>
+          <option value="supported">Supporting evidence matches the caption</option>
+          <option value="conflict">Evidence conflicts with the caption</option>
+          <option value="untested">I haven't checked</option>
+          <option value="unknown">There is no clear caption or context</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="independent">Have independent sources corroborated the claim?</label>
+        <select id="independent" required>
+          <option value="">Choose an answer</option>
+          <option value="multiple">Yes, multiple independent sources</option>
+          <option value="one">One additional source</option>
+          <option value="none">No additional source found</option>
+          <option value="unknown">I haven't checked</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="editing">Is editing or AI generation disclosed or evidenced?</label>
+        <select id="editing" required>
+          <option value="">Choose an answer</option>
+          <option value="disclosed">A disclosure or credible evidence exists</option>
+          <option value="none">No disclosure or evidence found</option>
+          <option value="unknown">I don't know</option>
+        </select>
+        <p class="note">
+          No disclosure does not mean the media is unedited or authentic.
+        </p>
+      </div>
+
+      <div class="field">
+        <label for="notes">Additional notes (optional)</label>
+        <textarea id="notes" rows="3" maxlength="1000"
+          placeholder="What is being claimed? What evidence did you find?"></textarea>
+      </div>
+
+      <button type="submit">Assess source and context</button>
+      <button type="reset" class="secondary">Clear answers</button>
+    </form>
+  </section>
+
+  <section class="panel" id="assessment" hidden aria-live="polite">
+    <h2>3. Assessment Report</h2>
+    <div class="result">
+      <p class="status" id="level"></p>
+      <p id="summary"></p>
+    </div>
+
+    <h3>Points to review</h3>
+    <ul id="findings"></ul>
+
+    <p class="note">
+      This report is based only on your answers. TruthLens has not
+      independently verified the source, location, date, caption, or
+      authenticity of the media.
+    </p>
+
+    <button type="button" id="copy">Copy report</button>
   </section>
 
   <footer>
-    TruthLens prototype · Media is previewed locally in your browser.
-    No authenticity verdict is generated.
+    TruthLens prototype · Source and context are not proof of authenticity.
+    Selected media is processed locally in this page.
   </footer>
 </main>
 
 <script>
   const picker = document.getElementById("media");
-  const image = document.getElementById("preview");
+  const preview = document.getElementById("preview");
   const video = document.getElementById("video");
   const details = document.getElementById("details");
-  const status = document.getElementById("status");
-  const explanation = document.getElementById("explanation");
-  let previousURL = null;
+  let currentURL = null;
+  let reportText = "";
 
   picker.addEventListener("change", () => {
     const file = picker.files[0];
     if (!file) return;
 
-    if (previousURL) URL.revokeObjectURL(previousURL);
-    previousURL = null;
-    image.hidden = true;
-    image.removeAttribute("src");
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
-    video.style.display = "none";
-    details.replaceChildren();
-
     if (!file.type.startsWith("image/") &&
         !file.type.startsWith("video/")) {
-      details.textContent = "Please select a supported image or video.";
+      details.textContent = "Please choose an image or video file.";
+      picker.value = "";
       return;
     }
 
-    previousURL = URL.createObjectURL(file);
+    if (currentURL) URL.revokeObjectURL(currentURL);
+    currentURL = URL.createObjectURL(file);
+
+    preview.hidden = true;
+    video.hidden = true;
+    preview.removeAttribute("src");
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
 
     if (file.type.startsWith("image/")) {
-      image.src = previousURL;
-      image.hidden = false;
+      preview.src = currentURL;
+      preview.hidden = false;
     } else {
-      video.src = previousURL;
-      video.style.display = "block";
+      video.src = currentURL;
+      video.hidden = false;
     }
 
-    const size = file.size < 1024 * 1024
-      ? (file.size / 1024).toFixed(1) + " KB"
-      : (file.size / (1024 * 1024)).toFixed(2) + " MB";
+    details.replaceChildren();
 
     const heading = document.createElement("h3");
     heading.textContent = "File details";
-    const list = document.createElement("p");
-    list.textContent =
+
+    const info = document.createElement("p");
+    const size = file.size < 1048576
+      ? (file.size / 1024).toFixed(1) + " KB"
+      : (file.size / 1048576).toFixed(2) + " MB";
+
+    info.style.whiteSpace = "pre-line";
+    info.textContent =
       "Name: " + file.name +
       "\nType: " + (file.type || "Unknown") +
       "\nSize: " + size +
@@ -138,13 +331,202 @@
       (file.lastModified
         ? new Date(file.lastModified).toLocaleString()
         : "Unknown");
-    list.style.whiteSpace = "pre-line";
-    details.append(heading, list);
 
-    status.textContent = "Undetermined";
-    explanation.textContent =
-      "The file has been previewed. These details do not prove " +
-      "whether it was AI-generated, edited, or captured by a camera.";
+    details.append(heading, info);
+  });
+
+  const form = document.getElementById("checker");
+  const assessment = document.getElementById("assessment");
+
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const answers = {
+      source: document.getElementById("source").value,
+      original: document.getElementById("original").value,
+      date: document.getElementById("date").value,
+      context: document.getElementById("context").value,
+      independent: document.getElementById("independent").value,
+      editing: document.getElementById("editing").value
+    };
+
+    let support = 0;
+    let concerns = 0;
+    const findings = [];
+
+    if (answers.source === "original" ||
+        answers.source === "reputable") {
+      support++;
+      findings.push(
+        "Reported source: a creator or established publication. " +
+        "The identity and original publication still need verification."
+      );
+    } else if (answers.source === "social" ||
+               answers.source === "forwarded") {
+      concerns++;
+      findings.push(
+        "The media was found through a repost, forwarding chain, " +
+        "or unknown account. Trace it to an original source."
+      );
+    } else {
+      findings.push("The source is unknown or not clearly established.");
+    }
+
+    if (answers.original === "yes") {
+      support++;
+      findings.push(
+        "You report finding an original source. Confirm that it is " +
+        "genuine and that it matches this exact media."
+      );
+    } else {
+      concerns++;
+      findings.push(
+        "The original source has not been confirmed. Search for " +
+        "earlier publications and the same media in its original context."
+      );
+    }
+
+    if (answers.date === "both") {
+      support++;
+      findings.push(
+        "You report evidence for both date and place. Check whether " +
+        "that evidence independently supports the specific claim."
+      );
+    } else if (answers.date === "one") {
+      findings.push("Only the date or place has supporting evidence.");
+    } else {
+      concerns++;
+      findings.push(
+        "The claimed date or place is unverified or unknown. " +
+        "Look for independent contextual evidence."
+      );
+    }
+
+    if (answers.context === "supported") {
+      support++;
+      findings.push(
+        "You report that the caption matches supporting evidence. " +
+        "Check the evidence directly before relying on the claim."
+      );
+    } else if (answers.context === "conflict") {
+      concerns += 2;
+      findings.push(
+        "Warning: you report a conflict between the caption and evidence. " +
+        "Do not rely on the claim until the discrepancy is resolved."
+      );
+    } else {
+      concerns++;
+      findings.push("The caption or context has not been adequately checked.");
+    }
+
+    if (answers.independent === "multiple") {
+      support++;
+      findings.push(
+        "You report multiple independent sources. Check that they " +
+        "are genuinely independent rather than repeating one source."
+      );
+    } else if (answers.independent === "one") {
+      findings.push(
+        "One additional source is reported. Seek independent corroboration."
+      );
+    } else {
+      concerns++;
+      findings.push("Independent corroboration is missing or unknown.");
+    }
+
+    if (answers.editing === "disclosed") {
+      findings.push(
+        "Editing or AI-related disclosure or evidence is reported. " +
+        "This alone does not establish whether the content is deceptive."
+      );
+    } else if (answers.editing === "none") {
+      findings.push(
+        "No editing or AI disclosure was found. Absence of a disclosure " +
+        "does not establish that the media is authentic."
+      );
+    } else {
+      findings.push("Editing history and AI involvement are unknown.");
+    }
+
+    let level;
+    let summary;
+
+    if (answers.context === "conflict") {
+      level = "Context conflict reported";
+      summary =
+        "A discrepancy was reported. Treat the claim cautiously " +
+        "until reliable evidence resolves it.";
+    } else if (concerns >= 4) {
+      level = "Limited supporting context";
+      summary =
+        "Several important details remain unverified. More evidence " +
+        "is needed before relying on the claim.";
+    } else if (support >= 3 && concerns <= 1) {
+      level = "More supporting context reported";
+      summary =
+        "Your answers indicate several supporting clues. They are " +
+        "self-reported and do not prove the media is authentic.";
+    } else {
+      level = "Context remains inconclusive";
+      summary =
+        "The available answers are mixed or incomplete. Verify the " +
+        "original source and key claims independently.";
+    }
+
+    const note = document.getElementById("notes").value.trim();
+
+    document.getElementById("level").textContent = level;
+    document.getElementById("summary").textContent = summary;
+
+    const list = document.getElementById("findings");
+    list.replaceChildren();
+
+    findings.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      list.appendChild(li);
+    });
+
+    reportText =
+      "TRUTHLENS SOURCE & CONTEXT REPORT\n\n" +
+      "Assessment: " + level + "\n" +
+      summary + "\n\n" +
+      findings.map((item, i) => (i + 1) + ". " + item).join("\n") +
+      (note ? "\n\nUser notes: " + note : "") +
+      "\n\nBased on user-provided answers only. " +
+      "Not an independent verification or AI-detection result.";
+
+    assessment.hidden = false;
+    assessment.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  form.addEventListener("reset", () => {
+    assessment.hidden = true;
+    reportText = "";
+  });
+
+  document.getElementById("copy").addEventListener("click", async () => {
+    if (!reportText) return;
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(reportText);
+      } else {
+        const box = document.createElement("textarea");
+        box.value = reportText;
+        box.style.position = "fixed";
+        box.style.opacity = "0";
+        document.body.appendChild(box);
+        box.select();
+        const copied = document.execCommand("copy");
+        box.remove();
+        if (!copied) throw new Error("Copy unavailable");
+      }
+
+      document.getElementById("copy").textContent = "Report copied!";
+    } catch (error) {
+      window.prompt("Copy your report from here:", reportText);
+    }
   });
 </script>
 </body>
