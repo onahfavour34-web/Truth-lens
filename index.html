@@ -529,5 +529,57 @@
     }
   });
 </script>
+
+<!-- TruthLens Metadata Inspector -->
+<section id="metadata-inspector" style="max-width:800px;margin:24px auto;padding:20px;border:1px solid #334155;border-radius:14px;background:#111827;color:#f9fafb;font-family:Arial,sans-serif;">
+  <h2 style="margin-top:0;">🔎 Metadata Inspector</h2>
+  <p>Inspect basic metadata available in an image file on your device.</p>
+  <label for="metadata-file">Choose an image:</label>
+  <input id="metadata-file" type="file" accept="image/*" style="display:block;margin:14px 0;max-width:100%;">
+  <button id="metadata-check" type="button" style="padding:10px 16px;border:0;border-radius:8px;background:#38bdf8;color:#082f49;font-weight:bold;">Inspect Image</button>
+  <pre id="metadata-results" style="white-space:pre-wrap;overflow-wrap:anywhere;margin-top:16px;padding:12px;background:#030712;border-radius:8px;">Choose an image, then tap Inspect Image.</pre>
+  <p style="font-size:12px;color:#cbd5e1;">Note: Browsers may not expose EXIF camera details. Missing metadata does not mean an image is fake or AI-generated.</p>
+</section>
+
+<script>
+(function () {
+  const fileInput = document.getElementById('metadata-file');
+  const inspectButton = document.getElementById('metadata-check');
+  const output = document.getElementById('metadata-results');
+
+  if (!fileInput || !inspectButton || !output) return;
+
+  inspectButton.addEventListener('click', function () {
+    const file = fileInput.files && fileInput.files[0];
+
+    if (!file) {
+      output.textContent = 'Please choose an image first.';
+      return;
+    }
+
+    const lines = [
+      'File name: ' + file.name,
+      'File type: ' + (file.type || 'Not provided'),
+      'File size: ' + file.size.toLocaleString() + ' bytes',
+      'Last modified: ' + (
+        file.lastModified
+          ? new Date(file.lastModified).toLocaleString()
+          : 'Not provided'
+      ),
+      '',
+      'EXIF camera details: Not read by this basic inspector.',
+      'Authenticity verdict: Not determined.'
+    ];
+
+    if (file.type && !file.type.startsWith('image/')) {
+      output.textContent = 'Please choose a supported image file.';
+      return;
+    }
+
+    output.textContent = lines.join('\n');
+  });
+})();
+</script>
+<!-- End TruthLens Metadata Inspector -->
 </body>
 </html>
