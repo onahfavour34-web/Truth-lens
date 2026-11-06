@@ -541,45 +541,105 @@
   <p style="font-size:12px;color:#cbd5e1;">Note: Browsers may not expose EXIF camera details. Missing metadata does not mean an image is fake or AI-generated.</p>
 </section>
 
+
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 <script>
 (function () {
-  const fileInput = document.getElementById('metadata-file');
-  const inspectButton = document.getElementById('metadata-check');
+  const input = document.getElementById('metadata-file');
+  const button = document.getElementById('metadata-check');
   const output = document.getElementById('metadata-results');
 
-  if (!fileInput || !inspectButton || !output) return;
+  if (!input || !button || !output) return;
 
-  inspectButton.addEventListener('click', function () {
-    const file = fileInput.files && fileInput.files[0];
+  function gpsValue(value, reference) {
+    if (!value || value.length < 3) return null;
+
+    const decimal = Number(value[0]) +
+      Number(value[1]) / 60 +
+      Number(value[2]) / 3600;
+
+    return reference === 'S' || reference === 'W'
+      ? -decimal : decimal;
+  }
+
+  button.addEventListener('click', function () {
+    const file = input.files && input.files[0];
 
     if (!file) {
       output.textContent = 'Please choose an image first.';
       return;
     }
 
-    const lines = [
-      'File name: ' + file.name,
-      'File type: ' + (file.type || 'Not provided'),
-      'File size: ' + file.size.toLocaleString() + ' bytes',
-      'Last modified: ' + (
-        file.lastModified
-          ? new Date(file.lastModified).toLocaleString()
-          : 'Not provided'
-      ),
-      '',
-      'EXIF camera details: Not read by this basic inspector.',
-      'Authenticity verdict: Not determined.'
-    ];
-
-    if (file.type && !file.type.startsWith('image/')) {
-      output.textContent = 'Please choose a supported image file.';
+    if (!file.type.startsWith('image/')) {
+      output.textContent = 'Please choose an image file.';
       return;
     }
 
-    output.textContent = lines.join('\n');
+    if (!window.EXIF) {
+      output.textContent =
+        'Metadata library unavailable. Check your internet connection and refresh.';
+      return;
+    }
+
+    output.textContent = 'Reading image metadata...';
+
+    EXIF.getData(file, function () {
+      try {
+        const tags = EXIF.getAllTags(this) || {};
+        const lines = [
+          'TRUTHLENS METADATA REPORT',
+          '-------------------------',
+          'Filename: ' + file.name,
+          'File type: ' + (file.type || 'Not provided'),
+          'File size: ' + file.size.toLocaleString() + ' bytes',
+          '',
+          'CAMERA DETAILS',
+          'Make: ' + (tags.Make || 'Not available'),
+          'Model: ' + (tags.Model || 'Not available'),
+          '',
+          'DATES',
+          'Date taken: ' +
+            (tags.DateTimeOriginal || 'Not available'),
+          'File last modified: ' +
+            (file.lastModified
+              ? new Date(file.lastModified).toLocaleString()
+              : 'Not available'),
+          '',
+          'IMAGE DETAILS',
+          'Width: ' + (tags.PixelXDimension || 'Not available'),
+          'Height: ' + (tags.PixelYDimension || 'Not available'),
+          'Orientation: ' + (tags.Orientation || 'Not available'),
+          '',
+          'GPS LOCATION'
+        ];
+
+        const lat = gpsValue(tags.GPSLatitude, tags.GPSLatitudeRef);
+        const lon = gpsValue(tags.GPSLongitude, tags.GPSLongitudeRef);
+
+        if (lat !== null && lon !== null) {
+          lines.push('Latitude: ' + lat);
+          lines.push('Longitude: ' + lon);
+        } else {
+          lines.push('GPS coordinates: Not available');
+        }
+
+        lines.push(
+          '',
+          'AUTHENTICITY',
+          'Verdict: Not determined.',
+          'Missing or altered metadata alone cannot prove an image is fake.'
+        );
+
+        output.textContent = lines.join('\n');
+      } catch (error) {
+        output.textContent =
+          'Could not read metadata from this file. Try a JPEG image.';
+      }
+    });
   });
 })();
 </script>
+  
 <!-- End TruthLens Metadata Inspector -->
 </body>
 </html>
