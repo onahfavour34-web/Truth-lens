@@ -583,59 +583,79 @@
 
     output.textContent = 'Reading image metadata...';
 
-    EXIF.getData(file, function () {
-      try {
-        const tags = EXIF.getAllTags(this) || {};
-        const lines = [
-          'TRUTHLENS METADATA REPORT',
-          '-------------------------',
-          'Filename: ' + file.name,
-          'File type: ' + (file.type || 'Not provided'),
-          'File size: ' + file.size.toLocaleString() + ' bytes',
-          '',
-          'CAMERA DETAILS',
-          'Make: ' + (tags.Make || 'Not available'),
-          'Model: ' + (tags.Model || 'Not available'),
-          '',
-          'DATES',
-          'Date taken: ' +
-            (tags.DateTimeOriginal || 'Not available'),
-          'File last modified: ' +
-            (file.lastModified
-              ? new Date(file.lastModified).toLocaleString()
-              : 'Not available'),
-          '',
-          'IMAGE DETAILS',
-          'Width: ' + (tags.PixelXDimension || 'Not available'),
-          'Height: ' + (tags.PixelYDimension || 'Not available'),
-          'Orientation: ' + (tags.Orientation || 'Not available'),
-          '',
-          'GPS LOCATION'
-        ];
+ 
+    const image = new Image();
+    const imageUrl = URL.createObjectURL(file);
 
-        const lat = gpsValue(tags.GPSLatitude, tags.GPSLatitudeRef);
-        const lon = gpsValue(tags.GPSLongitude, tags.GPSLongitudeRef);
-
-        if (lat !== null && lon !== null) {
-          lines.push('Latitude: ' + lat);
-          lines.push('Longitude: ' + lon);
-        } else {
-          lines.push('GPS coordinates: Not available');
-        }
-
-        lines.push(
-          '',
-          'AUTHENTICITY',
-          'Verdict: Not determined.',
-          'Missing or altered metadata alone cannot prove an image is fake.'
-        );
-
-        output.textContent = lines.join('\n');
-      } catch (error) {
-        output.textContent =
-          'Could not read metadata from this file. Try a JPEG image.';
+    image.onload = function () {
+      if (typeof EXIF === 'undefined') {
+        output.textContent = 'Metadata library failed to load. Please refresh and try again.';
+        URL.revokeObjectURL(imageUrl);
+        return;
       }
-    });
+
+      EXIF.getData(image, function () {
+        try {
+          const tags = EXIF.getAllTags(this) || {};
+          const lines = [
+            'TRUTHLENS METADATA REPORT',
+            '-------------------------',
+            'Filename: ' + file.name,
+            'File type: ' + (file.type || 'Not provided'),
+            'File size: ' + file.size.toLocaleString() + ' bytes',
+            '',
+            'CAMERA DETAILS',
+            'Make: ' + (tags.Make || 'Not available'),
+            'Model: ' + (tags.Model || 'Not available'),
+            '',
+            'DATES',
+            'Date taken: ' + (tags.DateTimeOriginal || 'Not available'),
+            'File last modified: ' +
+              (file.lastModified
+                ? new Date(file.lastModified).toLocaleString()
+                : 'Not available'),
+            '',
+            'IMAGE DETAILS',
+            'Width: ' + (tags.PixelXDimension || image.naturalWidth || 'Not available'),
+            'Height: ' + (tags.PixelYDimension || image.naturalHeight || 'Not available'),
+            'Orientation: ' + (tags.Orientation || 'Not available'),
+            '',
+            'GPS LOCATION'
+          ];
+
+          const lat = gpsValue(tags.GPSLatitude, tags.GPSLatitudeRef);
+          const lon = gpsValue(tags.GPSLongitude, tags.GPSLongitudeRef);
+
+          if (lat !== null && lon !== null) {
+            lines.push('Latitude: ' + lat);
+            lines.push('Longitude: ' + lon);
+          } else {
+            lines.push('GPS coordinates: Not available');
+          }
+
+          lines.push(
+            '',
+            'AUTHENTICITY',
+            'Verdict: Not determined.',
+            'Missing or altered metadata alone cannot prove an image is fake.'
+          );
+
+          output.textContent = lines.join('\n');
+        } catch (error) {
+          output.textContent = 'Could not read metadata. Please try another JPEG image.';
+        } finally {
+          URL.revokeObjectURL(imageUrl);
+        }
+      });
+    };
+
+    image.onerror = function () {
+      output.textContent = 'Could not load this image. Please choose another image.';
+      URL.revokeObjectURL(imageUrl);
+    };
+
+    image.src = imageUrl;
+    
   });
 })();
 </script>
